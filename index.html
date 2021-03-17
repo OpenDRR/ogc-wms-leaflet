@@ -143,7 +143,8 @@
     var wmsLayer = L.tileLayer.wms('https://maps-cartes.services.geo.ca/server_serveur/services/NRCan/nhsl_en/MapServer/WMSServer?', {
         layers: '0',
         format: 'image/png',
-        transparent: true
+        transparent: true,
+        opacity: 0.7
     }).addTo( map );
 
     // zoom to Canada
