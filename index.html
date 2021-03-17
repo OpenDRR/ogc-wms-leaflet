@@ -119,24 +119,24 @@
 
     L.tileLayer.wms('https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_CBCT_GEOM_3978/MapServer/tile/{z}/{y}/{x}', {
         format: 'image/png',
-        maxZoom: 17,
-        minZoom: 0,
+        // maxZoom: 17,
+        // minZoom: 0,
         attribution: '<a href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285">Canada Base Map &copy; Natural Resources Canada</a>'
     }).addTo( map );
 
     // English map text
     L.tileLayer.wms('https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_TXT_3978/MapServer/tile/{z}/{y}/{x}', {
         format: 'image/png',
-        maxZoom: 17,
-        minZoom: 0,
+        // maxZoom: 17,
+        // minZoom: 0,
         attribution: '<a href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285">Canada Base Map &copy; Natural Resources Canada</a>'
     }).addTo( map );
 
     // French map text
     // L.tileLayer.wms('https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBCT_TXT_3978/MapServer/tile/{z}/{y}/{x}', {
     //     format: 'image/png',
-    //     maxZoom: 17,
-    //     minZoom: 0,
+        // maxZoom: 17,
+        // minZoom: 0,
     //     attribution: '<a href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285">Canada Base Map &copy; Natural Resources Canada</a>'
     // }).addTo( map );
 
