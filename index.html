@@ -114,8 +114,106 @@
             ],
             origin: [-34655800, 39310000]
         }),
-        map = new L.Map('map', { crs: crs }),
-        legend = L.control({ position: 'bottomright' });
+        map = new L.Map( 'map', { crs: crs } ),
+        legend = L.control( { position: 'bottomright' } );
+
+    L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
+  
+        onAdd: function ( map ) {
+            // Triggered when the layer is added to a map.
+            //   Register a click listener, then do all the upstream WMS things
+            L.TileLayer.WMS.prototype.onAdd.call( this, map );
+            map.on( 'click', this.getFeatureInfo, this );
+        },
+        
+        onRemove: function ( map ) {
+            // Triggered when the layer is removed from a map.
+            //   Unregister a click listener, then do all the upstream WMS things
+            L.TileLayer.WMS.prototype.onRemove.call( this, map );
+            map.off( 'click', this.getFeatureInfo, this );
+        },
+        
+        getFeatureInfo: function ( evt ) {
+
+            $( '#sidebar' ).empty();
+
+            // Make an AJAX request to the server and hope for the best
+            var url = this.getFeatureInfoUrl( evt.latlng ),
+                showResults = L.Util.bind( this.showGetFeatureInfo, this );
+                
+            $.ajax({
+                url: url,
+                success: function ( data, status, xhr ) {
+                    var err = typeof data === 'string' ? null : data;
+                    showResults( err, evt.latlng, data );
+                },
+                error: function ( xhr, status, error ) {
+                    showResults( error );  
+                }
+            });
+        },
+        
+        getFeatureInfoUrl: function ( latlng, layer ) {
+
+            // Construct a GetFeatureInfo request URL given a point
+            var point = this._map.latLngToContainerPoint( latlng, this._map.getZoom() ),
+                size = this._map.getSize(),
+                bounds = map.getBounds(),
+                sw = bounds.getSouthWest(),
+                ne = bounds.getNorthEast(),
+                sw = crs.projection._proj.forward([sw.lng, sw.lat]),
+                ne = crs.projection._proj.forward([ne.lng, ne.lat]);
+                
+                params = {
+                    request: 'GetFeatureInfo',
+                    service: 'WMS',
+                    srs: 'EPSG:3978',
+                    styles: this.wmsParams.styles,
+                    transparent: this.wmsParams.transparent,
+                    version: this.wmsParams.version,      
+                    format: this.wmsParams.format,
+                    bbox: [sw.join( ',' ), ne.join( ',' )].join( ',' ),
+                    height: size.y,
+                    width: size.x,
+                    layers: this.wmsParams.layers,
+                    query_layers: this.wmsParams.layers,
+                    info_format: 'application/geojson'
+                };
+            
+            params[ params.version === '1.3.0' ? 'i' : 'x' ] = point.x;
+            params[ params.version === '1.3.0' ? 'j' : 'y' ] = point.y;
+            
+            return this._url + L.Util.getParamString( params, this._url, true );
+        },
+        
+        showGetFeatureInfo: function ( err, latlng, content ) {
+
+            const data = JSON.parse( content );
+            
+            if ( err ) { console.log( err ); return; } // do nothing if there's an error
+            
+            if ( data.features.length > 0 ) {
+                
+                let props = data.features[0].properties,
+                    string = '';
+
+                for ( const key in props ) {
+
+                    string +=
+                        '<div class="attr"><span class="prop">' + key + '</span><span class="val">' + props[key] + '</span></div>';
+                }
+
+                $( '#sidebar' ).html( '<h3>Selected feature properties</h3>' + string );
+
+            }
+
+        }
+
+    });
+
+    L.tileLayer.betterWms = function (url, options) {
+        return new L.TileLayer.BetterWMS(url, options);  
+    };
 
     L.tileLayer.wms('https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_CBCT_GEOM_3978/MapServer/tile/{z}/{y}/{x}', {
         format: 'image/png',
@@ -140,7 +238,7 @@
     //     attribution: '<a href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285">Canada Base Map &copy; Natural Resources Canada</a>'
     // }).addTo( map );
 
-    var wmsLayer = L.tileLayer.wms('https://maps-cartes.services.geo.ca/server_serveur/services/NRCan/nhsl_en/MapServer/WMSServer?', {
+    L.tileLayer.betterWms('https://maps-cartes.services.geo.ca/server_serveur/services/NRCan/nhsl_en/MapServer/WMSServer?', {
         layers: '0',
         format: 'image/png',
         transparent: true,
