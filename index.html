@@ -243,7 +243,7 @@
     //     attribution: '<a href="https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/free-data-geogratis/licence/17285">Canada Base Map &copy; Natural Resources Canada</a>'
     // }).addTo( map );
 
-    L.tileLayer.betterWms('https://maps-cartes.services.geo.ca/server_serveur/services/NRCan/nhsl_en/MapServer/WMSServer?', {
+    L.tileLayer.betterWms('https://maps-cartes.services.geo.ca/server_serveur/services/NRCan/physical_exposure_en/MapServer/WMSServer?', {
         layers: '0',
         format: 'image/png',
         transparent: true,
@@ -270,7 +270,7 @@
 
         var div = L.DomUtil.create( 'div', 'info legend' );
 
-        div.innerHTML = '<img src="https://maps-cartes.services.geo.ca:443/server_serveur/services/NRCan/nhsl_en/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=0"></div>';
+        div.innerHTML = '<img src="https://maps-cartes.services.geo.ca:443/server_serveur/services/NRCan/physical_exposure_en/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=0"/>';
 
         return div;
     };
